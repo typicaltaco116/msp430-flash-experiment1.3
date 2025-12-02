@@ -19,6 +19,7 @@
 *
 *  - VERSION 1.3: Add bit status counting for both write and erase
 *  - Fix awful stress progress displaying
+*  - Increase clock speed to 8MHz
 ****************************************************************/
 #include <msp430.h> 
 #include <stdint.h>
