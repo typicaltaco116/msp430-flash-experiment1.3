@@ -20,12 +20,14 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val)
   stats->incorrect_bit_count = 0;
   stats->unstable_bit_count = 0;
   
+  // Iterate through entire segment
   while(read_head < (uint16_t*)(seg + 1)){
+
     uint16_t bit_votes[16] = {0};
     uint16_t difference_votes[16] = {0};
 
 
-    // Gather bit votes
+    // Perform repeated word reads
     for (uint8_t i = 0; i < STAT_READ_COUNT; i++){
 
       word_bin = *read_head; // read
