@@ -52,8 +52,6 @@ uint64_t get_chipID(void);
 void doRoutineStatistics(f_bank_t, char*);
 void doRoutineStatisticsCSV(f_bank_t, char*);
 
-void dumpBankErasedBinary(f_bank_t, char*);
-
 
 int main(void)
 {
@@ -339,31 +337,4 @@ void haltUntilInput(void)
 uint64_t get_chipID(void)
 {
   return *(uint64_t*)CHIP_ID_ADR;
-}
-
-void dumpBankErasedBinary(f_bank_t bank, char* charBuffer)
-{
-  uint16_t* wordPtr;
-  uint16_t wordNum;
-  uint16_t line;
-  
-  f_bankErase(bank);
-
-  wordPtr = (uint16_t*)bank;
-  line = 32768 / 32;
-
-  while(line){
-    snprintf(charBuffer, BUF_SIZE, "0x%05p  ", wordPtr);
-    Serial0_write(charBuffer);
-
-    wordNum = 16;
-    while(wordNum){
-      snprintf(charBuffer, BUF_SIZE, "%04X ", *wordPtr++);
-      Serial0_write(charBuffer);
-      wordNum--;
-    }
-
-    Serial0_write(ENDL);
-    line--;
-  }
 }
