@@ -277,7 +277,7 @@ void f_segmentPartialErase_x(f_segment_t targetPtr, uint16_t x)
 }
 void end_f_segmentPartialErase_x(void) {}
 
-void f_segmentPartialWrite_x(f_segment_t target, uint16_t partialValue, uint16_t x)
+void f_segmentPartialWrite(f_segment_t target, uint16_t partialValue, uint16_t x)
 {
   uint16_t* wordPtr;
   void (*SRAM_p_write)(uint16_t, uint16_t*);

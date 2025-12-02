@@ -67,6 +67,7 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val)
 
 }
 
+/*
 void fs_getPartialWriteStats(f_segment_t target, fs_stats_s* stats, uint16_t val)
 {
   void (*SRAM_p_write)(uint16_t, uint16_t*); // declare function pointer 
@@ -80,8 +81,62 @@ void fs_getPartialWriteStats(f_segment_t target, fs_stats_s* stats, uint16_t val
   }
   stats->partial_write_latency = _event_timer_value;
   stats->partial_nop_count = f_partialWriteNOPCountLUT[9];
+
+  SRAM_p_write = malloc_subroutine(f_wordPartialWrite_9, end_f_wordPartialWrite_9);
+  SRAM_p_write(val, target);
+  free(SRAM_p_write);
+  if (*target ^ val){
+    return;
+  }
+  stats->partial_write_latency = _event_timer_value;
+  stats->partial_nop_count = f_partialWriteNOPCountLUT[8];
   
+  SRAM_p_write = malloc_subroutine(f_wordPartialWrite_8, end_f_wordPartialWrite_8);
+  SRAM_p_write(val, target);
+  free(SRAM_p_write);
+  if (*target ^ val){
+    return;
+  }
+  stats->partial_write_latency = _event_timer_value;
+  stats->partial_nop_count = f_partialWriteNOPCountLUT[7];
+  
+  SRAM_p_write = malloc_subroutine(f_wordPartialWrite_7, end_f_wordPartialWrite_7);
+  SRAM_p_write(val, target);
+  free(SRAM_p_write);
+  if (*target ^ val){
+    return;
+  }
+  stats->partial_write_latency = _event_timer_value;
+  stats->partial_nop_count = f_partialWriteNOPCountLUT[6];
+  
+  SRAM_p_write = malloc_subroutine(f_wordPartialWrite_6, end_f_wordPartialWrite_6);
+  SRAM_p_write(val, target);
+  free(SRAM_p_write);
+  if (*target ^ val){
+    return;
+  }
+  stats->partial_write_latency = _event_timer_value;
+  stats->partial_nop_count = f_partialWriteNOPCountLUT[5];
+  
+  SRAM_p_write = malloc_subroutine(f_wordPartialWrite_5, end_f_wordPartialWrite_5);
+  SRAM_p_write(val, target);
+  free(SRAM_p_write);
+  if (*target ^ val){
+    return;
+  }
+  stats->partial_write_latency = _event_timer_value;
+  stats->partial_nop_count = f_partialWriteNOPCountLUT[4];
+  
+  SRAM_p_write = malloc_subroutine(f_wordPartialWrite_7, end_f_wordPartialWrite_7);
+  SRAM_p_write(val, target);
+  free(SRAM_p_write);
+  if (*target ^ val){
+    return;
+  }
+  stats->partial_write_latency = _event_timer_value;
+  stats->partial_nop_count = f_partialWriteNOPCountLUT[6];
 }
+*/
 
 /*
 void fs_getPartialEraseStats(f_segment_t seg, fs_stats_s* stats)

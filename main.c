@@ -27,6 +27,7 @@
 #include <stdio.h>
 
 #include "src/flash_operations.h"
+#include "src/flash_partial_operations.h"
 #include "src/flash_statistics.h"
 #include "src/Serial.h"
 #include "src/unified_clock_system.h"
@@ -254,10 +255,10 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
     Serial0_write(charBuffer);
     // CHECK EACH BIT AFTER LAST WRITE
     fs_checkBits(seg, &stats, 0x0000); // ~4 seconds!
-    snprintf(charBuffer, BUF_SIZE, " %u,",
+    snprintf(charBuffer, BUF_SIZE, " %4u,",
              stats.incorrect_bit_count);
     Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %u,",
+    snprintf(charBuffer, BUF_SIZE, " %4u,",
              stats.unstable_bit_count);
     Serial0_write(charBuffer);
 
@@ -265,9 +266,72 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     // CHECK EACH VALUE AFTER ERASE OPERATION
     fs_checkBits(seg, &stats, 0xFFFF);
-    snprintf(charBuffer, BUF_SIZE, " %u,", stats.incorrect_bit_count);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
     Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %u" ENDL, stats.unstable_bit_count);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
+    Serial0_write(charBuffer);
+
+    // CHECK EACH WORD AFTER PARTIAL WRITE OPERATIONS
+    f_segmentPartialWrite(seg, 0x0000, 10);
+
+    fs_checkBits(seg, &stats, 0x0000);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
+    Serial0_write(charBuffer);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
+    Serial0_write(charBuffer);
+
+    f_segmentErase(seg);
+    f_segmentPartialWrite(seg, 0x0000, 9);
+
+    fs_checkBits(seg, &stats, 0x0000);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
+    Serial0_write(charBuffer);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
+    Serial0_write(charBuffer);
+
+    f_segmentErase(seg);
+    f_segmentPartialWrite(seg, 0x0000, 8);
+
+    fs_checkBits(seg, &stats, 0x0000);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
+    Serial0_write(charBuffer);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
+    Serial0_write(charBuffer);
+
+    f_segmentErase(seg);
+    f_segmentPartialWrite(seg, 0x0000, 7);
+
+    fs_checkBits(seg, &stats, 0x0000);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
+    Serial0_write(charBuffer);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
+    Serial0_write(charBuffer);
+
+    f_segmentErase(seg);
+    f_segmentPartialWrite(seg, 0x0000, 6);
+
+    fs_checkBits(seg, &stats, 0x0000);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
+    Serial0_write(charBuffer);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
+    Serial0_write(charBuffer);
+
+    f_segmentErase(seg);
+    f_segmentPartialWrite(seg, 0x0000, 5);
+
+    fs_checkBits(seg, &stats, 0x0000);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
+    Serial0_write(charBuffer);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
+    Serial0_write(charBuffer);
+
+    f_segmentErase(seg);
+    f_segmentPartialWrite(seg, 0x0000, 4);
+
+    fs_checkBits(seg, &stats, 0x0000);
+    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
+    Serial0_write(charBuffer);
+    snprintf(charBuffer, BUF_SIZE, " %4u" ENDL, stats.unstable_bit_count);
     Serial0_write(charBuffer);
 
     seg++;
@@ -322,8 +386,6 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
   Serial0_write(charBuffer);
   snprintf(charBuffer, BUF_SIZE, " %.3f" ENDL, wordWriteTime3);
   Serial0_write(charBuffer);
-
-
 }
 
 void haltUntilInput(void)
