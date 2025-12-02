@@ -22,33 +22,38 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val)
   
   while(read_head < (uint16_t*)(seg + 1)){
     uint16_t bit_votes[16] = {0};
+    uint16_t difference_votes[16] = {0};
 
 
-    // unstable bit detection
+    // Gather bit votes
     for (uint8_t i = 0; i < STAT_READ_COUNT; i++){
 
-      word_bin = *read_head;
+      word_bin = *read_head; // read
+      differences = word_bin ^ *read_head; // comparison read
 
-      for (uint8_t b = 0; b < 16; b++) {
-          if (word_bin & (1 << b)) {
-              bit_votes[b]++;
-          }
+      for (uint8_t b = 0; b < 16; b++){
+        if (word_bin & (1 << b)){
+            bit_votes[b]++;
+        }
+
+        if (differences & (1 << b)){
+          difference_votes[b]++;
+        }
       }
 
-      differences = word_bin ^ *read_head;
-      for (uint8_t s = 16; s != 0; s--){
-        if(differences & BIT0)
-          stats->unstable_bit_count++;
-        differences = differences >> 1;
-      }
     }
 
-    // Form voted word based on majority (6 or more)
+    // Process vote arrays
     for (uint8_t b = 0; b < 16; b++) {
-      voted_bit =  (bit_votes[b] >= (STAT_READ_COUNT / 2 + 1));
 
+      // Form voted word based on majority (6 or more)
+      voted_bit =  (bit_votes[b] >= (STAT_READ_COUNT / 2 + 1));
       if (voted_bit ^ ((expected_val >> b) & 1)) // ISSUE IN ORIGINAL CODE
         stats->incorrect_bit_count++;
+
+      // Increment unstable bits if changed atleast once
+      if (difference_votes[b] > 0)
+        stats->unstable_bit_count++;
     }
 
     read_head++;
