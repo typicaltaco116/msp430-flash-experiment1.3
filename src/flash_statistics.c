@@ -1,7 +1,9 @@
 #include "flash_statistics.h"
+
 #include <msp430.h>
 #include <stdint.h>
 #include "flash_operations.h"
+#include "flash_partial_operations.h"
 #include "event_timer.h"
 #include "SRAM_subroutine_copy.h"
 
@@ -65,13 +67,11 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val)
 
 }
 
-/*
-void fs_getPartialWriteStats(uint16_t* target, fs_stats_s* stats, uint16_t val)
+void fs_getPartialWriteStats(f_segment_t target, fs_stats_s* stats, uint16_t val)
 {
   void (*SRAM_p_write)(uint16_t, uint16_t*); // declare function pointer 
 
-  // Test 13 NOP delayed partial word write
-  SRAM_p_write = malloc_subroutine(f_word_partial_write_13, end_f_word_partial_write_13);
+  SRAM_p_write = malloc_subroutine(f_wordPartialWrite_10, end_f_wordPartialWrite_10);
   SRAM_p_write(val, target);
   free(SRAM_p_write);
   if (*target ^ val){
@@ -79,69 +79,9 @@ void fs_getPartialWriteStats(uint16_t* target, fs_stats_s* stats, uint16_t val)
     return;
   }
   stats->partial_write_latency = _event_timer_value;
-  stats->partial_nop_count = 13;
+  stats->partial_nop_count = f_partialWriteNOPCountLUT[9];
   
-  // Test 12 NOP delayed partial word write
-  SRAM_p_write = malloc_subroutine(f_word_partial_write_12, end_f_word_partial_write_12);
-  SRAM_p_write(val, target);
-  free(SRAM_p_write);
-  if (*target ^ val){
-    return;
-  }
-  stats->partial_write_latency = _event_timer_value;
-  stats->partial_nop_count = 12;
-
-  // Test 11 NOP delayed partial word write
-  SRAM_p_write = malloc_subroutine(f_word_partial_write_11, end_f_word_partial_write_11);
-  SRAM_p_write(val, target);
-  free(SRAM_p_write);
-  if (*target ^ val){
-    return;
-  }
-  stats->partial_write_latency = _event_timer_value;
-  stats->partial_nop_count = 11;
-
-  // Test 10 NOP delayed partial word write
-  SRAM_p_write = malloc_subroutine(f_word_partial_write_10, end_f_word_partial_write_10);
-  SRAM_p_write(val, target);
-  free(SRAM_p_write);
-  if (*target ^ val){
-    return;
-  }
-  stats->partial_write_latency = _event_timer_value;
-  stats->partial_nop_count = 10;
-
-  // Test 9 NOP delayed partial word write
-  SRAM_p_write = malloc_subroutine(f_word_partial_write_9, end_f_word_partial_write_9);
-  SRAM_p_write(val, target);
-  free(SRAM_p_write);
-  if (*target ^ val){
-    return;
-  }
-  stats->partial_write_latency = _event_timer_value;
-  stats->partial_nop_count = 9;
-
-  // Test 8 NOP delay partial word write
-  SRAM_p_write = malloc_subroutine(f_word_partial_write_8, end_f_word_partial_write_8);
-  SRAM_p_write(val, target);
-  free(SRAM_p_write);
-  if (*target ^ val){
-    return;
-  }
-  stats->partial_write_latency = _event_timer_value;
-  stats->partial_nop_count = 8;
-
-  // Test 7 NOP delay partial word write
-  SRAM_p_write = malloc_subroutine(f_word_partial_write_7, end_f_word_partial_write_7);
-  SRAM_p_write(val, target);
-  free(SRAM_p_write);
-  if (*target ^ val){
-    return;
-  }
-  stats->partial_write_latency = _event_timer_value;
-  stats->partial_nop_count = 7;
 }
-*/
 
 /*
 void fs_getPartialEraseStats(f_segment_t seg, fs_stats_s* stats)

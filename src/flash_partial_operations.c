@@ -2,9 +2,11 @@
 
 #include <msp430.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "flash_operations.h"
 #include "event_timer.h"
+#include "SRAM_subroutine_copy.h"
 
 #define COUNT 107
 
@@ -12,6 +14,8 @@
 #define REPEAT_5(x) {x;x;x;x;x;}
 #define REPEAT_10(x) {REPEAT_5(x) REPEAT_5(x)}
 #define REPEAT_50(x) {REPEAT_10(x) REPEAT_10(x) REPEAT_10(x) REPEAT_10(x) REPEAT_10(x)}
+
+uint16_t f_partialWriteNOPCountLUT[] = {8, 9, 10, 11, 107, 108, 109, 110, 111, 112};
 
 
 void f_wordPartialWrite_1(uint16_t partialValue, uint16_t* targetPtr)
@@ -272,3 +276,66 @@ void f_segmentPartialErase_x(f_segment_t targetPtr, uint16_t x)
   EVENT_TIMER_STOP;
 }
 void end_f_segmentPartialErase_x(void) {}
+
+void f_segmentPartialWrite_x(f_segment_t target, uint16_t partialValue, uint16_t x)
+{
+  uint16_t* wordPtr;
+  void (*SRAM_p_write)(uint16_t, uint16_t*);
+  void (*flash_p_write_start)(uint16_t, uint16_t*);
+  void (*flash_p_write_end)(void);
+
+  // select correct flash partial write function
+  switch(x){
+    case 1:
+      flash_p_write_start = f_wordPartialWrite_1;
+      flash_p_write_end = end_f_wordPartialWrite_1;
+      break;
+    case 2:
+      flash_p_write_start = f_wordPartialWrite_2;
+      flash_p_write_end = end_f_wordPartialWrite_2;
+      break;
+    case 3:
+      flash_p_write_start = f_wordPartialWrite_3;
+      flash_p_write_end = end_f_wordPartialWrite_3;
+      break;
+    case 4:
+      flash_p_write_start = f_wordPartialWrite_4;
+      flash_p_write_end = end_f_wordPartialWrite_4;
+      break;
+    case 5:
+      flash_p_write_start = f_wordPartialWrite_5;
+      flash_p_write_end = end_f_wordPartialWrite_5;
+      break;
+    case 6:
+      flash_p_write_start = f_wordPartialWrite_6;
+      flash_p_write_end = end_f_wordPartialWrite_6;
+      break;
+    case 7:
+      flash_p_write_start = f_wordPartialWrite_7;
+      flash_p_write_end = end_f_wordPartialWrite_7;
+      break;
+    case 8:
+      flash_p_write_start = f_wordPartialWrite_8;
+      flash_p_write_end = end_f_wordPartialWrite_8;
+      break;
+    case 9:
+      flash_p_write_start = f_wordPartialWrite_9;
+      flash_p_write_end = end_f_wordPartialWrite_9;
+      break;
+    case 10:
+      flash_p_write_start = f_wordPartialWrite_10;
+      flash_p_write_end = end_f_wordPartialWrite_10;
+      break;
+  }
+
+  // move selected subroutine to SRAM
+  SRAM_p_write = malloc_subroutine(flash_p_write_start, flash_p_write_end);
+
+  wordPtr = (uint16_t*)target;
+
+  while(wordPtr < (uint16_t*)(target + 1)){
+    SRAM_p_write(partialValue, wordPtr++); // partial write the word
+  }
+
+  free(SRAM_p_write); // free memory from heap
+}

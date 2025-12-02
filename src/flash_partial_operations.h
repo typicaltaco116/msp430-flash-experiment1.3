@@ -42,6 +42,8 @@
   10.)  112
 ******************************************************************************/
 
+extern uint16_t f_partialWriteNOPCountLUT[10];
+
 void __attribute__((noinline)) f_wordPartialWrite_1(uint16_t value, uint16_t* targetPtr);
 void __attribute__((noinline)) end_f_wordPartialWrite_1(void);
 
@@ -73,3 +75,8 @@ void __attribute__((noinline)) f_wordPartialWrite_10(uint16_t partialValue, uint
 void __attribute__((noinline)) end_f_wordPartialWrite_10(void);
 
 void __attribute__((noinline)) f_segmentPartialErase_x(f_segment_t targetPtr, uint16_t x);
+void __attribute__((noinline)) end_f_segmentPartialErase_x(void);
+
+void f_segmentPartialWrite_x(f_segment_t target, uint16_t partialValue, uint16_t x);
+// NOTE: the x denotes the chosen partial write above. It does not indicate the
+// exact number of clock cycles. See clock cycle chart at the top of this file.
