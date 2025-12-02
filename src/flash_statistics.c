@@ -33,6 +33,7 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val)
       word_bin = *read_head; // read
       differences = word_bin ^ *read_head; // comparison read
 
+      // Gather votes
       for (uint8_t b = 0; b < 16; b++){
         if (word_bin & (1 << b)){
             bit_votes[b]++;
@@ -58,11 +59,13 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val)
         stats->unstable_bit_count++;
     }
 
+    // increment to next word in segment
     read_head++;
   }
 
 }
 
+/*
 void fs_getPartialWriteStats(uint16_t* target, fs_stats_s* stats, uint16_t val)
 {
   void (*SRAM_p_write)(uint16_t, uint16_t*); // declare function pointer 
@@ -138,8 +141,9 @@ void fs_getPartialWriteStats(uint16_t* target, fs_stats_s* stats, uint16_t val)
   stats->partial_write_latency = _event_timer_value;
   stats->partial_nop_count = 7;
 }
+*/
 
-
+/*
 void fs_getPartialEraseStats(f_segment_t seg, fs_stats_s* stats)
 {
   void (*SRAM_p_erase)(uint16_t*, uint16_t);
@@ -165,3 +169,4 @@ void fs_getPartialEraseStats(f_segment_t seg, fs_stats_s* stats)
   }
   free(SRAM_p_erase);
 }
+*/

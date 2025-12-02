@@ -136,15 +136,17 @@ MEMORY
 
 SECTIONS
 {
-    .f_segment_partial_erase_4 : {} > FLASH
-    .f_segment_partial_erase_x : {} > FLASH
-    .f_word_partial_write_7 : {} > FLASH
-    .f_word_partial_write_8 : {} > FLASH
-    .f_word_partial_write_9 : {} > FLASH
-    .f_word_partial_write_10 : {} > FLASH
-    .f_word_partial_write_11 : {} > FLASH
-    .f_word_partial_write_12 : {} > FLASH
-    .f_word_partial_write_13 : {} > FLASH
+    .f_segmentPartialErase_x : {} > FLASH
+    .f_wordPartialWrite_1 : {} > FLASH
+    .f_wordPartialWrite_2 : {} > FLASH
+    .f_wordPartialWrite_3 : {} > FLASH
+    .f_wordPartialWrite_4 : {} > FLASH
+    .f_wordPartialWrite_5 : {} > FLASH
+    .f_wordPartialWrite_6 : {} > FLASH
+    .f_wordPartialWrite_7 : {} > FLASH
+    .f_wordPartialWrite_8 : {} > FLASH
+    .f_wordPartialWrite_9 : {} > FLASH
+    .f_wordPartialWrite_10 : {} > FLASH
     .f_segmentWrite : {} > FLASH
 
     .bss        : {} > RAM                  /* Global & static vars              */
