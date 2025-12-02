@@ -33,13 +33,13 @@
   1.)   8
   2.)   9
   3.)   10
-  4.)   11
-  5.)   107
-  6.)   108
-  7.)   109
-  8.)   110
-  9.)   111
-  10.)  112
+  4.)   107
+  5.)   108
+  6.)   109
+  7.)   110
+  8.)   111
+  9.)   112
+  10.)  113
 ******************************************************************************/
 
 extern uint16_t f_partialWriteNOPCountLUT[10];
@@ -76,6 +76,8 @@ void __attribute__((noinline)) end_f_wordPartialWrite_10(void);
 
 void __attribute__((noinline)) f_segmentPartialErase_x(f_segment_t targetPtr, uint16_t x);
 void __attribute__((noinline)) end_f_segmentPartialErase_x(void);
+
+void f_segmentPartialErase(f_segment_t target, uint16_t x);
 
 void f_segmentPartialWrite(f_segment_t target, uint16_t partialValue, uint16_t x);
 // NOTE: the x denotes the chosen partial write above. It does not indicate the

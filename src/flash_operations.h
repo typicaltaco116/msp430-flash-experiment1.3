@@ -45,6 +45,8 @@ void f_wordWriteTimed(uint16_t value, uint16_t* targetPtr);
 void f_segmentWrite(uint16_t value, uint16_t* blockPtr);
 void end_f_segmentWrite(void);
 
+void f_segmentWriteRAM(uint16_t value, uint16_t* blockPtr);
+
 void f_segmentStress(f_segment_t seg, uint16_t val, uint32_t iterations);
 
 void f_bankStress(f_bank_t bank, uint16_t val, uint32_t iterations);

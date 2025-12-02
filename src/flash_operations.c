@@ -132,6 +132,16 @@ void f_segmentWrite(uint16_t value, uint16_t* blockPtr)
 }
 void end_f_segmentWrite(void) {}
 
+void f_segmentWriteRAM(uint16_t value, uint16_t* blockPtr){
+  void (*SRAM_seg_write)(uint16_t, uint16_t*);
+  
+  SRAM_seg_write = malloc_subroutine(f_segmentWrite, end_f_segmentWrite);
+
+  SRAM_seg_write(value, blockPtr);
+
+  free(SRAM_seg_write);
+}
+
 
 void f_segmentStress(f_segment_t seg, uint16_t val, uint32_t iterations)
 // Since erasing flash forces all bits high, a value of 0x0000 will result in
