@@ -15,7 +15,7 @@
 #define REPEAT_10(x) {REPEAT_5(x) REPEAT_5(x)}
 #define REPEAT_50(x) {REPEAT_10(x) REPEAT_10(x) REPEAT_10(x) REPEAT_10(x) REPEAT_10(x)}
 
-uint16_t f_partialWriteNOPCountLUT[] = {8, 9, 10, 107, 108, 109, 110, 111, 112, 113};
+const uint16_t f_partialWriteNOPCountLUT[] = {8, 9, 10, 107, 108, 109, 110, 111, 112, 113};
 
 
 void f_wordPartialWrite_1(uint16_t partialValue, uint16_t* targetPtr)

@@ -42,7 +42,7 @@
   10.)  113
 ******************************************************************************/
 
-extern uint16_t f_partialWriteNOPCountLUT[10];
+extern const uint16_t f_partialWriteNOPCountLUT[10];
 
 void __attribute__((noinline)) f_wordPartialWrite_1(uint16_t value, uint16_t* targetPtr);
 void __attribute__((noinline)) end_f_wordPartialWrite_1(void);
