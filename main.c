@@ -88,32 +88,6 @@ int main(void)
 
   Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
 
-  /* MAIN LOOP */
-  for(uint32_t i = 0; i < TOTAL_PE_CYCLES / STAT_INCREMENT_CYCLES; i++){
-
-    // STRESS BANK BY STAT_INCREMENT (200K)
-    for(uint32_t s = 0; s < STAT_INCREMENT_CYCLES/STRESS_INDICATOR_CYCLES; s++){
-
-      // PERFORM STRESS_INDICATOR_CYCLES (25k) STRESS CYCLES
-      f_bankStress(bank_D, 0x0000, STRESS_INDICATOR_CYCLES);
-      /* 0x0000 indicates 100% flash bit wear
-         f_stress_bank will return with all words written to 0x0000 */
-
-      // DISPLAY STRESSING PROGRESS IN 25K INCREMENTS
-      snprintf(outputBuffer, BUF_SIZE, ENDL "STRESSING SEGMENTS PROGRESS : %lu" ENDL,
-              (uint32_t)(i * STAT_INCREMENT_CYCLES + (s + 1) * STRESS_INDICATOR_CYCLES));
-      Serial0_write(outputBuffer);
-    }
-
-    // DISPLAY PROGRESS SO FAR
-    Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
-    snprintf(outputBuffer, BUF_SIZE, ENDL "Cycle count: %lu" ENDL ENDL, (uint32_t)((i + 1) * STAT_INCREMENT_CYCLES));
-    Serial0_write(outputBuffer);
-    Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
-
-    // PERFORM STATISTICS FOR ENTIRE BANK
-    doRoutineStatisticsCSV(bank_D, outputBuffer);
-  }
 
   Serial0_write(" DONE..." ENDL ENDL);
 
@@ -138,9 +112,8 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
   Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
   Serial0_write("  Segment Bit Errors (CSV)" ENDL);
   Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
-  Serial0_write("Segment #N, Nominal Program, Nominal Erase, 112 NOP Part Prog, 111 NOP, 110 NOP, 109 NOP, 108 NOP," ENDL
-                "107 NOP, 7.0ms Part Erase, 6.5ms, 6.0ms, 5.5ms, 5.0ms, 4.5ms, 4.0ms, 3.5ms, 3.0ms, 2.5ms, 2.0ms," ENDL
-                "1.5ms, 1.0ms, 0.5ms, 0.0ms" ENDL);
+  Serial0_write("Segment #N, Nominal Program, Nominal Erase, 14.5ms Part Erase, 14.0ms, 13.5ms, 13.0ms, 12.5ms, " ENDL
+                "12.0ms, 11.5ms, 11.0ms, 10.5ms, 10.0ms, 9.5ms, 9.0ms, 8.5ms, 8.0ms, 7.5ms" ENDL);
 
   // STATS FOR EACH SEGMENT IN BANK
   for(uint16_t s = 0 ; s < F_BANK_N_SEGMENTS; s++){
@@ -166,65 +139,10 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
     Serial0_write(charBuffer);
 
-    // CHECK EACH WORD AFTER PARTIAL WRITE OPERATIONS
-    f_segmentPartialWrite(seg, 0x0000, 9);
-
-    fs_checkBits(seg, &stats, 0x0000);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-    f_segmentErase(seg);
-    f_segmentPartialWrite(seg, 0x0000, 8);
-
-    fs_checkBits(seg, &stats, 0x0000);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-    f_segmentErase(seg);
-    f_segmentPartialWrite(seg, 0x0000, 7);
-
-    fs_checkBits(seg, &stats, 0x0000);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-    f_segmentErase(seg);
-    f_segmentPartialWrite(seg, 0x0000, 6);
-
-    fs_checkBits(seg, &stats, 0x0000);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-    f_segmentErase(seg);
-    f_segmentPartialWrite(seg, 0x0000, 5);
-
-    fs_checkBits(seg, &stats, 0x0000);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-    f_segmentErase(seg);
-    f_segmentPartialWrite(seg, 0x0000, 4);
-
-    fs_checkBits(seg, &stats, 0x0000);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, " %4u,", stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-
     // CHECK PARTIAL ERASE OPERATIONS
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(7.0E-3 * 1048576.0)); // 7 MS delay
+    f_segmentPartialErase(seg, (uint16_t)(14.5E-3 * 1048576.0)); // 7 MS delay
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -234,7 +152,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(6.5E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(14.0E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -244,7 +162,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(6.0E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(13.5E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -254,7 +172,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(5.5E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(13.0E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -264,7 +182,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(5.0E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(12.5E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -274,7 +192,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(4.5E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(12.0E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -284,7 +202,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(4.0E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(11.5E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -294,7 +212,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(3.5E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(11.0E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -304,7 +222,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(3.0E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(10.5E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -314,7 +232,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(2.5E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(10.0E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -324,7 +242,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(2.0E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(9.5E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -334,7 +252,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(1.5E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(9.0E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -344,7 +262,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(1.0E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(8.5E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -354,7 +272,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, (uint16_t)(0.5E-3 * 1048576.0));
+    f_segmentPartialErase(seg, (uint16_t)(8.0E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
@@ -364,7 +282,7 @@ void doRoutineStatisticsCSV(f_bank_t bankPtr, char* charBuffer)
 
     f_segmentErase(seg);
     f_segmentWriteRAM(0x0000, (uint16_t*)seg);
-    f_segmentPartialErase(seg, 0); // 0 MS delay
+    f_segmentPartialErase(seg, (uint16_t)(7.5E-3 * 1048576.0));
 
     fs_checkBits(seg, &stats, 0xFFFF);
     snprintf(charBuffer, BUF_SIZE, " %4u,", stats.incorrect_bit_count);
