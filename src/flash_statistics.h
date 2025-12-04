@@ -28,15 +28,3 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val);
   incorrect bit - A bit in flash that differs from expected_val parameters
   unstable bit - Bit that reads differently atleast once out of STAT_READ_COUNT times
 */
-
-//void fs_getPartialWriteStats(uint16_t* target, fs_stats_s* stats, uint16_t val);
-/*
-  Function to get the fastest partial word write possible for a flash segment
-  Tests 12, 10, 8, 6, 4, 0 NOP delayed partial word writes
-*/
-
-//void fs_getPartialEraseStats(f_segment_t seg, fs_stats_s* stats);
-/*
-  Function to get the fastest partial segment erase possible for a flash segment
-  Tests 12, 10, 8, 6, 4, 0 ms delayed partial erases
-*/
