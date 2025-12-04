@@ -32,7 +32,6 @@
 #include "src/Serial.h"
 #include "src/unified_clock_system.h"
 #include "src/event_timer.h"
-#include "src/SRAM_subroutine_copy.h"
 
 
 #define PRINT_CSV
