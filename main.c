@@ -84,11 +84,7 @@ int main(void)
   f_bankStress(bank_D, 0x0000, 1);
 
   // PERFORM INITIAL STATISTICS
-  #ifdef PRINT_CSV
   doRoutineStatisticsCSV(bank_D, outputBuffer);
-  #else
-  doRoutineStatistics(bank_D, outputBuffer);
-  #endif
 
   Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
 
