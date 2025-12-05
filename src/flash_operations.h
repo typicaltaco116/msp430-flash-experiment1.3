@@ -17,6 +17,8 @@
 
 #pragma CODE_SECTION(f_segmentWrite, ".f_segmentWrite")
 #pragma CODE_SECTION(end_f_segmentWrite, ".f_segmentWrite")
+#pragma CODE_SECTION(f_bankEraseRAM, ".f_bankEraseRAM")
+#pragma CODE_SECTION(end_f_bankEraseRAM, ".f_bankEraseRAM")
 
 #define F_BANK_N_SEGMENTS 64
 #define F_SEGMENT_N_BYTES 512
@@ -39,6 +41,9 @@ void f_segmentEraseTimed(f_segment_t segPtr);
 void f_bankErase(f_bank_t bankPtr);
 void f_bankEraseTimed(f_bank_t bankPtr);
 
+void f_bankEraseRAM(f_bank_t bankPtr);
+void end_f_bankEraseRAM(void);
+
 void f_wordWrite(uint16_t value, uint16_t* targetPtr);
 void f_wordWriteTimed(uint16_t value, uint16_t* targetPtr);
 
@@ -47,5 +52,5 @@ void end_f_segmentWrite(void);
 
 void f_segmentStress(f_segment_t seg, uint16_t val, uint32_t iterations);
 
-void f_bankStress(f_bank_t bank, uint16_t val, uint32_t iterations);
+void f_bankStress(f_bank_t bank, uint16_t val, int32_t iterations);
 

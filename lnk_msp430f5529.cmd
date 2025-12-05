@@ -148,6 +148,7 @@ SECTIONS
     .f_wordPartialWrite_9 : {} > FLASH
     .f_wordPartialWrite_10 : {} > FLASH
     .f_segmentWrite : {} > FLASH
+    .f_bankEraseRAM : {} > FLASH
 
     .bss        : {} > RAM                  /* Global & static vars              */
     .data       : {} > RAM                  /* Global & static vars              */

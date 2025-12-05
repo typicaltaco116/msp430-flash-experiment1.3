@@ -1,6 +1,7 @@
 #include "flash_operations.h"
 #include <msp430.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "event_timer.h"
 #include "SRAM_subroutine_copy.h"
 #include "Serial.h"
@@ -55,6 +56,22 @@ void f_bankErase(f_bank_t bankPtr)
   FCTL1 = FWPW; // clear MERASE
   FCTL3 = FWPW + LOCK; // lock
 }
+
+void f_bankEraseRAM(f_bank_t bankPtr)
+{
+  while(FCTL3 & BUSY);
+
+  FCTL3 = FWPW; //clear lock
+  FCTL1 = FWPW + MERAS; // enable bank erase
+  *(uint16_t*)bankPtr = 0x0000; // dummy write to initiate erase
+
+  while(FCTL3 & BUSY); // loop while busy
+
+  FCTL1 = FWPW; // clear MERASE
+  FCTL3 = FWPW + LOCK; // lock
+}
+void end_f_bankEraseRAM(void) {}
+
 
 void f_bankEraseTimed(f_bank_t bankPtr)
 {
@@ -153,18 +170,23 @@ void f_segmentStress(f_segment_t seg, uint16_t val, uint32_t iterations)
   free((void*)SRAM_f_block_set); // deallocate memory
 }
 
-void f_bankStress(f_bank_t bank, uint16_t val, uint32_t iterations)
+void f_bankStress(f_bank_t bank, uint16_t val, int32_t iterations)
 {
   f_segment_t target;
   void (*SRAM_f_block_set)(uint16_t, uint16_t*); // declare function pointer
+  void (*SRAM_f_bankErase)(uint16_t*); // declare function pointer
 
   SRAM_f_block_set = malloc_subroutine(f_segmentWrite, end_f_segmentWrite);
   if(!(void*)SRAM_f_block_set)
     return; // null pointer means the memory cannot be allocated
 
+  SRAM_f_bankErase = malloc_subroutine(f_bankEraseRAM, end_f_bankEraseRAM);
+  if(!(void*)SRAM_f_bankErase)
+    return; // null pointer means the memory cannot be allocated
 
-  while(iterations){
-    f_bankErase(bank);
+
+  while(iterations > 0){
+    SRAM_f_bankErase((uint16_t*)bank);
     target = (f_segment_t)bank;
 
     for(uint8_t s = F_BANK_N_SEGMENTS; s != 0; s--) // set all segments in the bank
@@ -174,4 +196,5 @@ void f_bankStress(f_bank_t bank, uint16_t val, uint32_t iterations)
   }
 
   free(SRAM_f_block_set); // deallocate memory
+  free(SRAM_f_bankErase);
 }
