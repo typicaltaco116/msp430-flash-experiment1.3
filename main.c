@@ -50,7 +50,6 @@
 void haltUntilInput(void);
 uint64_t get_chipID(void);
 
-void doRoutineStatistics(f_bank_t, char*);
 void doRoutineStatisticsCSV(f_bank_t, char*);
 
 
@@ -121,114 +120,12 @@ int main(void)
     Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
 
     // PERFORM STATISTICS FOR ENTIRE BANK
-    #ifdef PRINT_CSV
     doRoutineStatisticsCSV(bank_D, outputBuffer);
-    #else
-    doRoutineStatistics(bank_D, outputBuffer);
-    #endif
   }
 
   Serial0_write(" DONE..." ENDL ENDL);
 
   return 0;
-
-}
-
-void doRoutineStatistics(f_bank_t bankPtr, char* charBuffer)
-{
-  f_segment_t seg;
-  fs_stats_s stats;
-  f_segment_t bottom_segment, middle_segment, top_segment;
-  float segEraseTime1, segEraseTime2, segEraseTime3;
-  float wordWriteTime1, wordWriteTime2, wordWriteTime3;
-
-  // SET POINTER BACK TO BASE SEGMENT
-  seg = (f_segment_t)bankPtr; 
-  bottom_segment = (f_segment_t)bankPtr + 0;
-  middle_segment = (f_segment_t)bankPtr + 31;
-  top_segment = (f_segment_t)bankPtr + 63;
-
-  Serial0_write("--------------------------------------------------------------" ENDL);
-  Serial0_write("  Segment Bit Errors" ENDL);
-  Serial0_write("--------------------------------------------------------------" ENDL);
-
-  // STATS FOR EACH SEGMENT IN BANK
-  for(uint16_t s = 0 ; s < F_BANK_N_SEGMENTS; s++){
-    // DISPLAY SEGMENT HEADER
-    snprintf(charBuffer, BUF_SIZE, "Segment #%02u (0x%p) Statistics" ENDL, s, seg);
-    Serial0_write(charBuffer);
-
-    // CHECK EACH BIT AFTER LAST WRITE
-    fs_checkBits(seg, &stats, 0x0000); // ~4 seconds!
-    snprintf(charBuffer, BUF_SIZE, "    Write incorrect bit count   : %u" ENDL,
-             stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, "    Write unstable bit count    : %u" ENDL,
-             stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-    f_segmentErase(seg);
-
-    // CHECK EACH VALUE AFTER ERASE OPERATION
-    fs_checkBits(seg, &stats, 0xFFFF);
-    snprintf(charBuffer, BUF_SIZE, "    Erase incorrect bit count   : %u" ENDL, stats.incorrect_bit_count);
-    Serial0_write(charBuffer);
-    snprintf(charBuffer, BUF_SIZE, "    Erase unstable bit count    : %u" ENDL, stats.unstable_bit_count);
-    Serial0_write(charBuffer);
-
-    seg++;
-  }
-
-  segEraseTime1 = segEraseTime2 = segEraseTime3 = 0;
-  wordWriteTime1 = wordWriteTime2 = wordWriteTime3 = 0;
-
-  // GET AVERAGE TIME ERASES AND WRITES
-  for(int i = 0; i < 3; i++){
-    // SEGMENT ERASES
-    f_segmentEraseTimed(bottom_segment);
-    segEraseTime1 += (float)_event_timer_value * SLOW_EVENT_TIMER_USEC_FLT;
-
-    f_segmentEraseTimed(middle_segment);
-    segEraseTime2 += (float)_event_timer_value * SLOW_EVENT_TIMER_USEC_FLT;
-
-    f_segmentEraseTimed(top_segment);
-    segEraseTime3 += (float)_event_timer_value * SLOW_EVENT_TIMER_USEC_FLT;
-
-    // WORD WRITES
-    f_wordWriteTimed(0x0000, (uint16_t*)bottom_segment);
-    wordWriteTime1 += (float)_event_timer_value * EVENT_TIMER_USEC_FLT;
-
-    f_wordWriteTimed(0x0000, (uint16_t*)(middle_segment));
-    wordWriteTime2 += (float)_event_timer_value * EVENT_TIMER_USEC_FLT;
-
-    f_wordWriteTimed(0x0000, (uint16_t*)(top_segment));
-    wordWriteTime3 += (float)_event_timer_value * EVENT_TIMER_USEC_FLT;
-  }
-
-  segEraseTime1 /= 3.0;
-  segEraseTime2 /= 3.0;
-  segEraseTime3 /= 3.0;
-  wordWriteTime1 /= 3.0;
-  wordWriteTime2 /= 3.0;
-  wordWriteTime3 /= 3.0;
-
-  Serial0_write("--------------------------------------------------------------" ENDL);
-  Serial0_write("  Nominal flash operation times" ENDL);
-  Serial0_write("--------------------------------------------------------------" ENDL);
-
-  snprintf(charBuffer, BUF_SIZE, "Segment %p nominal erase time = %.3f us" ENDL, bottom_segment, segEraseTime1);
-  Serial0_write(charBuffer);
-  snprintf(charBuffer, BUF_SIZE, "Segment %p nominal erase time = %.3f us" ENDL, middle_segment, segEraseTime2);
-  Serial0_write(charBuffer);
-  snprintf(charBuffer, BUF_SIZE, "Segment %p nominal erase time = %.3f us" ENDL, top_segment, segEraseTime3);
-  Serial0_write(charBuffer);
-  snprintf(charBuffer, BUF_SIZE, "Word %p nominal write time = %.3f us" ENDL, bottom_segment, wordWriteTime1);
-  Serial0_write(charBuffer);
-  snprintf(charBuffer, BUF_SIZE, "Word %p nominal write time = %.3f us" ENDL, middle_segment, wordWriteTime2);
-  Serial0_write(charBuffer);
-  snprintf(charBuffer, BUF_SIZE, "Word %p nominal write time = %.3f us" ENDL, top_segment, wordWriteTime3);
-  Serial0_write(charBuffer);
-
 
 }
 
