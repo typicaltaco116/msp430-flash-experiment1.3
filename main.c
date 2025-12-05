@@ -94,7 +94,11 @@ int main(void)
 
   /* MAIN LOOP */
   for(uint32_t i = 0; i < TOTAL_PE_CYCLES / STAT_INCREMENT_CYCLES; i++){
-    Serial0_write("BEGIN BANK STRESSING" ENDL);
+
+    Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
+    snprintf(outputBuffer, BUF_SIZE, ENDL "Cycle count: %lu" ENDL ENDL, (uint32_t)((i) * STAT_INCREMENT_CYCLES));
+    Serial0_write(outputBuffer);
+    Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
 
     // STRESS BANK BY STAT_INCREMENT (200K)
     for(uint32_t s = 0; s < STAT_INCREMENT_CYCLES/STRESS_INDICATOR_CYCLES; s++){
