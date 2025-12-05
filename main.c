@@ -41,9 +41,9 @@
 #define F5529_FLASH_BANK_D      0x1C400
 #define CHIP_ID_ADR             0x1A0A
 
-#define TOTAL_PE_CYCLES         20//2000000 
-#define STAT_INCREMENT_CYCLES   2//200000 // number of PE cycles to stress between stats
-#define STRESS_INDICATOR_CYCLES 1//25000
+#define TOTAL_PE_CYCLES         2E6 
+#define STAT_INCREMENT_CYCLES   200000 // number of PE cycles to stress between stats
+#define STRESS_INDICATOR_CYCLES 25000
 
 #define ENDL "\r\n"
 #define BUF_SIZE                64
@@ -87,7 +87,6 @@ int main(void)
   doRoutineStatisticsCSV(bank_D, outputBuffer);
 
   Serial0_write("----------------------------------------------------------------------------------------------------" ENDL);
-
 
   Serial0_write(" DONE..." ENDL ENDL);
 
