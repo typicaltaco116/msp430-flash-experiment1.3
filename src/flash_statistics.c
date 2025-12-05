@@ -33,7 +33,7 @@ void fs_checkBits(f_segment_t seg, fs_stats_s* stats, uint16_t expected_val)
     for (uint8_t i = 0; i < STAT_READ_COUNT; i++){
 
       word_bin = *read_head; // read
-      differences = word_bin ^ *read_head; // comparison read
+      differences = expected_val ^ word_bin; // comparison
 
       // Gather votes
       for (uint8_t b = 0; b < 16; b++){

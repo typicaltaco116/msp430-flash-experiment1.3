@@ -13,7 +13,7 @@
 
 typedef struct fs_stats_struct {
   uint16_t incorrect_bit_count; // bits that are not the value expected
-  uint16_t unstable_bit_count; // bits that change atleast once in 11 reads
+  uint16_t unstable_bit_count; // bits that are incorrect atleast once in 11 reads
   uint16_t write_latency; // latency for a proper word write
   uint16_t erase_latency; // latency for proper segment erase
   uint16_t partial_write_latency;
